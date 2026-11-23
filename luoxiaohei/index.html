@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>罗小黑 · Luo Xiaohei</title>
+<style>
+
+:root {
+  --ink:    #2c1810;
+  --teal:   #3d9090;
+  --tl2:    #5dbaba;
+  --mint:   #d0ecea;
+  --mint2:  #b4ddd8;
+  --text:   #2a1a12;
+  --text2:  #5a3a28;
+  --ear:    #c8eba0;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:focus-visible{outline:3px solid #267070;outline-offset:5px;border-radius:8px}
+
+body{
+  font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+  background:linear-gradient(145deg,#cce9e4 0%,#b5d9d3 50%,#9ccac3 100%);
+  min-height:100vh;color:var(--text);overflow-x:hidden;
+}
+
+/* ── decorative bg circles ── */
+.deco{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.deco span{position:absolute;border-radius:50%;opacity:.07;animation:dfl linear infinite}
+.deco span:nth-child(1){width:360px;height:360px;background:var(--teal);top:3%;left:4%;animation-duration:22s}
+.deco span:nth-child(2){width:200px;height:200px;background:var(--ink);top:60%;left:72%;animation-duration:18s;animation-delay:-6s}
+.deco span:nth-child(3){width:110px;height:110px;background:var(--tl2);top:28%;left:84%;animation-duration:14s;animation-delay:-3s}
+.deco span:nth-child(4){width:65px;height:65px;background:var(--ear);top:80%;left:14%;animation-duration:10s;animation-delay:-8s}
+@keyframes dfl{0%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-26px) rotate(180deg)}100%{transform:translateY(0) rotate(360deg)}}
+
+/* ── HERO ── */
+.hero{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:24px;
+  padding:50px 20px 70px;
+}
+
+/* Title */
+.title h1{
+  font-family:'Noto Serif SC',serif;
+  font-size:clamp(2.8rem,7vw,5rem);font-weight:900;
+  color:var(--ink);letter-spacing:.06em;
+  text-shadow:2px 3px 0 rgba(255,255,255,.45);line-height:1.1;
+  text-align:center;
+}
+.title .sub{margin-top:8px;font-size:clamp(.78rem,1.8vw,1rem);color:var(--text2);letter-spacing:.14em;font-weight:300;text-align:center}
+.title .hint{margin-top:12px;font-size:.8rem;color:var(--teal);letter-spacing:.06em;text-align:center;animation:ph 2.6s ease-in-out infinite}
+@keyframes ph{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
+
+/* ── Stage ── */
+.stage{position:relative;width:min(100%,360px);height:auto;aspect-ratio:6/7;flex:none}
+.stage svg{display:block;width:100%;height:100%;overflow:visible}
+@media(max-width:420px){.hero{gap:20px;padding:36px 16px 64px}.stage{width:min(100%,360px)}}
+/* floor shadow */
+.stage::after{
+  content:'';position:absolute;bottom:8px;left:50%;
+  transform:translateX(-50%);
+  width:150px;height:20px;
+  background:radial-gradient(ellipse,rgba(20,8,3,.28) 0%,transparent 72%);
+  border-radius:50%;
+  animation:shd 3.2s ease-in-out infinite;
+}
+@keyframes shd{0%,100%{transform:translateX(-50%) scaleX(1);opacity:.7}50%{transform:translateX(-50%) scaleX(.8);opacity:.4}}
+
+/* Float */
+#lxh{animation:fl 3.2s ease-in-out infinite;transform-origin:center 88%;cursor:pointer}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
+
+/* Squish */
+.sq{animation:sq .5s cubic-bezier(.36,.07,.19,.97) both!important}
+@keyframes sq{0%{transform:scale(1,1)}15%{transform:scale(1.18,.82)}30%{transform:scale(.87,1.15)}50%{transform:scale(1.09,.91)}70%{transform:scale(.94,1.06)}88%{transform:scale(1.02,.98)}100%{transform:scale(1,1)}}
+
+/* Blink animation on the eyelid overlay */
+@keyframes blk{0%,88%,100%{transform:scaleY(1);opacity:0}93%{transform:scaleY(1);opacity:1}96%{transform:scaleY(1);opacity:0}}
+.lid{animation:blk 5s ease-in-out infinite;transform-origin:center;pointer-events:none}
+.lid2{animation:blk 5s ease-in-out infinite;animation-delay:.25s;transform-origin:center;pointer-events:none}
+
+/* ── Bubble ── */
+.bub{
+  position:absolute;top:-2px;left:50%;
+  transform:translateX(-50%) scale(0);
+  background:#fff;border:2.5px solid var(--teal);border-radius:24px;
+  padding:8px 20px;font-size:.95rem;font-weight:700;color:var(--ink);
+  white-space:nowrap;pointer-events:none;z-index:20;
+  box-shadow:0 4px 18px rgba(58,138,138,.2);
+  transition:transform .28s cubic-bezier(.34,1.56,.64,1),opacity .28s;opacity:0;
+}
+.bub::after{content:'';position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--teal)}
+.bub::before{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#fff;z-index:1}
+.bub.on{transform:translateX(-50%) scale(1);opacity:1}
+
+/* Hearts */
+.hrt{position:absolute;pointer-events:none;font-size:1.3rem;animation:hup 1.3s ease-out forwards;z-index:25}
+@keyframes hup{0%{opacity:1;transform:translateY(0) scale(1) rotate(0)}60%{opacity:.9;transform:translateY(-65px) scale(1.16) rotate(10deg)}100%{opacity:0;transform:translateY(-125px) scale(.5) rotate(-8deg)}}
+
+/* Chips */
+.chips{display:flex;gap:13px;flex-wrap:wrap;justify-content:center}
+.chip{background:rgba(255,255,255,.66);border:1.5px solid rgba(58,138,138,.26);border-radius:50px;padding:7px 18px;font-size:.86rem;color:var(--text2);backdrop-filter:blur(6px)}
+.chip b{color:var(--ink);font-weight:700;margin-right:4px}
+
+/* Scroll hint */
+.sdown{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;opacity:.5;animation:sb 2.2s ease-in-out infinite}
+.sdown span{font-size:.72rem;color:var(--teal);letter-spacing:.1em}
+.sdown svg{width:20px;height:20px;stroke:var(--teal)}
+@keyframes sb{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
+
+/* ── Sections ── */
+.sec{position:relative;z-index:1;padding:70px 24px 54px;max-width:880px;margin:0 auto}
+.sh{font-family:'Noto Serif SC',serif;font-size:1.8rem;font-weight:700;color:var(--ink);margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.sh::before{content:'';display:inline-block;width:5px;height:30px;background:var(--teal);border-radius:3px;flex-shrink:0}
+.sr{width:52px;height:3px;background:linear-gradient(90deg,var(--teal),transparent);border-radius:2px;margin-bottom:24px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+.card{background:rgba(255,255,255,.58);border:1.5px solid rgba(58,138,138,.17);border-radius:20px;padding:23px 26px;backdrop-filter:blur(8px);transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(20,10,5,.11)}
+.card h3{font-family:'Noto Serif SC',serif;font-size:1rem;font-weight:700;color:var(--teal);margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.card p{font-size:.9rem;line-height:1.78;color:var(--text2)}
+.card.w{grid-column:1/-1}
+.tags{display:flex;flex-wrap:wrap;gap:11px;margin-top:5px}
+.tag{background:linear-gradient(135deg,var(--teal),#267070);color:#fff;border-radius:50px;padding:8px 20px;font-size:.88rem;box-shadow:0 4px 12px rgba(58,138,138,.3);transition:transform .18s}
+.tag:hover{transform:translateY(-2px) scale(1.04)}
+.tag.g{background:linear-gradient(135deg,#577a5c,#3a5a3e);box-shadow:0 4px 12px rgba(58,100,58,.28)}
+.qcard{background:linear-gradient(135deg,rgba(22,10,3,.9),rgba(36,106,106,.85));border-radius:24px;padding:40px 44px;color:#fff;position:relative;overflow:hidden}
+.qcard::before{content:'❝';position:absolute;top:12px;left:26px;font-size:5rem;opacity:.16;font-family:serif;line-height:1}
+.qcard blockquote{font-family:'Noto Serif SC',serif;font-size:clamp(1rem,2.5vw,1.3rem);line-height:1.85;position:relative;z-index:1}
+.qcard cite{display:block;margin-top:16px;font-size:.82rem;color:rgba(255,255,255,.55);font-style:normal;letter-spacing:.08em}
+
+footer{position:relative;z-index:1;text-align:center;padding:26px 20px;font-size:.8rem;color:var(--text2);opacity:.6;letter-spacing:.06em;border-top:1px solid rgba(58,138,138,.13)}
+
+/* cursor trail */
+.ct{display:none;position:fixed;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);background:rgba(58,138,138,.42)}
+@media (hover:hover) and (pointer:fine){.ct{display:block}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.ct{display:none!important}}
+#ct0{width:11px;height:11px;opacity:.55}
+#ct1{width:8px;height:8px;opacity:.35}
+#ct2{width:5px;height:5px;opacity:.2}
+</style>
+</head>
+<body>
+
+<div class="deco"><span></span><span></span><span></span><span></span></div>
+<div class="ct" id="ct0"></div>
+<div class="ct" id="ct1"></div>
+<div class="ct" id="ct2"></div>
+
+<!-- ═══ HERO ═══ -->
+<header class="hero">
+  <div class="title">
+    <h1>罗小黑</h1>
+    <div class="sub">LUO XIAOHEI · 黑猫精灵 · 自然之子</div>
+    <div class="hint">🐾 移动鼠标 · 小黑会看着你 · 点击小手触发撒娇</div>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="bub" id="bub" role="status" aria-live="polite">🐾 摸摸我嘛～</div>
+
+    <!--
+    ════════════════════════════════════════════════
+      LXHEI SVG  viewBox="0 0 360 420"
+      Design brief (v3 – clean anime style):
+      ─ Head: nearly perfect large circle (r≈105),
+        solid #1a0e0a fill, 4px #3a1e10 stroke.
+        Proportionally dominant (most of the char).
+      ─ Left ear: rounded-triangle path, same black fill,
+        inner green fill (no separate stroke on inner).
+      ─ Right ear: smaller, tucked slightly right.
+      ─ Eyes: each eye has:
+          1. cream-white ellipse (sclera, no inner rings)
+          2. a solid black pupil circle (moves with mouse)
+          3. ONE clean white crescent arc in top-left
+             of the sclera (the signature highlight)
+          4. one small bright dot
+        NO dark brown rings cutting through the sclera.
+        NO overlapping ellipses inside the eye.
+      ─ Body: small simple oval below head, same black.
+        NO crease lines on body.
+      ─ Paws: two short stubby arms, ends in a simple
+        rounded rectangle paw with 3 subtle toe bumps
+        drawn as one smooth path.  No separate circles.
+      ─ Tail: clean single bezier curve.
+      ─ Sajiao overlay: two simple closed-eye arcs
+        + soft pink cheek ellipses.
+    ════════════════════════════════════════════════
+    -->
+    <svg id="lxh" viewBox="0 0 360 420" width="360" height="420" role="img" aria-label="罗小黑角色插画"
+         xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+      <defs>
+        <radialGradient id="gbk" cx="38%" cy="32%" r="62%">
+          <stop offset="0%" stop-color="#221410"/>
+          <stop offset="100%" stop-color="#0d0706"/>
+        </radialGradient>
+        <radialGradient id="gsc" cx="36%" cy="30%" r="65%">
+          <stop offset="0%" stop-color="#f2ede0"/>
+          <stop offset="100%" stop-color="#d4cfbc"/>
+        </radialGradient>
+        <radialGradient id="gpup" cx="30%" cy="28%" r="60%">
+          <stop offset="0%" stop-color="#1c0e08"/>
+          <stop offset="100%" stop-color="#060303"/>
+        </radialGradient>
+        <!-- clip pupils inside sclera -->
+        <clipPath id="clL"><ellipse cx="134" cy="162" rx="48" ry="52"/></clipPath>
+        <clipPath id="clR"><ellipse cx="236" cy="162" rx="43" ry="47"/></clipPath>
+        <!-- soft shadow for whole body -->
+        <filter id="fshadow" x="-10%" y="-5%" width="120%" height="125%">
+          <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="rgba(12,5,2,.38)"/>
+        </filter>
+        <!-- blush blur -->
+        <filter id="fbl"><feGaussianBlur stdDeviation="5"/></filter>
+      </defs>
+
+      <!-- ══ TAIL ══ -->
+      <path d="M238 318 Q280 355 272 335 Q264 316 244 312 Q240 311 238 318Z"
+            fill="url(#gbk)" stroke="#3a1e10" stroke-width="3.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- ══ BODY (small oval) ══ -->
+      <ellipse cx="185" cy="336" rx="58" ry="46"
+               fill="url(#gbk)" stroke="#3a1e10" stroke-width="4"/>
+
+      <!-- ══ LEFT EAR ══ -->
+      <path d="M110 140 Q88 82 120 68 Q145 58 156 106Z"
+            fill="url(#gbk)" stroke="#3a1e10" stroke-width="4" stroke-linejoin="round"/>
+      <!-- inner green – no stroke, just fill -->
+      <path d="M115 136 Q98 88 123 77 Q142 69 151 104Z"
+            fill="#c6e89a" opacity=".92"/>
+
+      <!-- ══ RIGHT EAR ══ -->
+      <path d="M228 116 Q248 74 262 83 Q275 97 254 124Z"
+            fill="url(#gbk)" stroke="#3a1e10" stroke-width="4" stroke-linejoin="round"/>
+
+      <!-- ══ HEAD (dominant large circle) ══ -->
+      <circle cx="183" cy="178" r="108"
+              fill="url(#gbk)" stroke="#3a1e10" stroke-width="4.5"
+              filter="url(#fshadow)"/>
+
+      <!-- ══ BLUSH (sajiao only) ══ -->
+      <ellipse id="blL" cx="118" cy="204" rx="22" ry="14"
+               fill="#e04848" opacity="0" filter="url(#fbl)"/>
+      <ellipse id="blR" cx="244" cy="207" rx="19" ry="12"
+               fill="#e04848" opacity="0" filter="url(#fbl)"/>
+
+      <!-- ════════════════════════════
+           LEFT EYE
+           Sclera centre: 134, 162  rx48 ry52
+      ════════════════════════════ -->
+      <!-- sclera – clean white ellipse, NO inner rings -->
+      <ellipse cx="134" cy="162" rx="48" ry="52"
+               fill="url(#gsc)" stroke="#3a1e10" stroke-width="3.5"/>
+
+      <!-- crescent moon highlight: a white arc shape at top-left of sclera -->
+      <!-- Achieved via a path that traces a crescent between two arcs -->
+      <path id="moonL"
+            d="M102 150
+               Q110 108 150 126
+               Q122 112 104 142
+               Z"
+            fill="#ede9da" opacity=".92"/>
+
+      <!-- pupil (moves via JS) -->
+      <g id="pupL" clip-path="url(#clL)">
+        <circle cx="134" cy="165" r="28" fill="url(#gpup)"/>
+        <!-- single bright sparkle dot -->
+        <circle cx="122" cy="153" r="7.5" fill="rgba(255,255,255,.82)"/>
+        <circle cx="138" cy="158" r="4"   fill="rgba(255,255,255,.5)"/>
+      </g>
+
+      <!-- upper eyelid curve (anime thick lid) -->
+      <path d="M90 160 Q134 126 178 160"
+            fill="none" stroke="#3a1e10" stroke-width="4.5" stroke-linecap="round"/>
+      <!-- lower lid subtle -->
+      <path d="M92 172 Q134 196 176 172"
+            fill="none" stroke="#3a1e10" stroke-width="2.5" stroke-linecap="round" opacity=".55"/>
+
+      <!-- blink lid (black fill that scales down to cover eye, normally opacity=0) -->
+      <ellipse class="lid" cx="134" cy="162" rx="48" ry="52"
+               fill="#140a06" stroke="none" opacity="0"/>
+
+      <!-- ════════════════════════════
+           RIGHT EYE
+           Sclera centre: 236, 162  rx43 ry47
+      ════════════════════════════ -->
+      <ellipse cx="236" cy="162" rx="43" ry="47"
+               fill="url(#gsc)" stroke="#3a1e10" stroke-width="3.2"/>
+
+      <!-- crescent highlight right -->
+      <path id="moonR"
+            d="M197 152
+               Q204 112 242 129
+               Q216 116 200 145
+               Z"
+            fill="#ede9da" opacity=".92"/>
+
+      <!-- pupil right -->
+      <g id="pupR" clip-path="url(#clR)">
+        <circle cx="236" cy="164" r="24" fill="url(#gpup)"/>
+        <circle cx="225" cy="153" r="6.5" fill="rgba(255,255,255,.82)"/>
+        <circle cx="240" cy="157" r="3.5" fill="rgba(255,255,255,.5)"/>
+      </g>
+
+      <!-- upper lid right -->
+      <path d="M195 160 Q236 127 278 160"
+            fill="none" stroke="#3a1e10" stroke-width="4.2" stroke-linecap="round"/>
+      <!-- lower lid right -->
+      <path d="M197 172 Q236 194 276 172"
+            fill="none" stroke="#3a1e10" stroke-width="2.2" stroke-linecap="round" opacity=".5"/>
+
+      <!-- blink lid right -->
+      <ellipse class="lid2" cx="236" cy="162" rx="43" ry="47"
+               fill="#140a06" stroke="none" opacity="0"/>
+
+      <!-- ══ NOSE (tiny) ══ -->
+      <path d="M177 222 Q184 218 191 222 Q186 229 180 229Z"
+            fill="#4a2816" opacity=".48"/>
+      <!-- mouth -->
+      <path d="M174 232 Q184 243 194 232"
+            fill="none" stroke="#4a2816" stroke-width="2" stroke-linecap="round" opacity=".44"/>
+
+      <!-- ══ SAJIAO EYE OVERLAY (hidden by default) ══ -->
+      <g id="happyEyes" opacity="0" pointer-events="none">
+        <!-- left eye closed arc filled black -->
+        <path d="M90 162 Q134 188 178 162 L178 172 Q134 200 90 172 Z"
+              fill="#140a06"/>
+        <path d="M91 162 Q134 186 177 162"
+              fill="none" stroke="#3a1e10" stroke-width="4" stroke-linecap="round"/>
+        <!-- right -->
+        <path d="M195 162 Q236 186 277 162 L277 172 Q236 198 195 172 Z"
+              fill="#140a06"/>
+        <path d="M196 162 Q236 185 276 162"
+              fill="none" stroke="#3a1e10" stroke-width="3.8" stroke-linecap="round"/>
+        <!-- blush in overlay -->
+        <ellipse cx="114" cy="205" rx="25" ry="15" fill="#e85858" opacity=".32" filter="url(#fbl)"/>
+        <ellipse cx="248" cy="208" rx="22" ry="13" fill="#e85858" opacity=".32" filter="url(#fbl)"/>
+        <!-- happy mouth -->
+        <path d="M170 234 Q184 248 198 234"
+              fill="none" stroke="#4a2816" stroke-width="2.5" stroke-linecap="round" opacity=".6"/>
+      </g>
+
+      <!-- ══ SPARKLES ══ -->
+      <g id="spk" opacity="0" pointer-events="none">
+        <text x="52"  y="92"  font-size="20" fill="#c8a040">✦</text>
+        <text x="292" y="86"  font-size="16" fill="#5dbaba">✦</text>
+        <text x="285" y="250" font-size="12" fill="#c8a040">✧</text>
+        <text x="60"  y="258" font-size="11" fill="#5dbaba">✧</text>
+      </g>
+
+      <!-- ══ LEFT PAW ══ -->
+      <!-- Simple smooth arm + rounded paw shape with 3-toe bumps as one path -->
+      <g id="pawL" class="paw" role="button" tabindex="0" aria-label="触摸左爪，让小黑撒娇" style="cursor:pointer">
+        <!-- arm -->
+        <path d="M140 365 Q112 382 104 405 Q101 420 118 427"
+              fill="url(#gbk)" stroke="#3a1e10" stroke-width="4"
+              stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- paw as one rounded rect-ish shape -->
+        <path d="M98 427 Q88 416 94 406 Q100 398 118 400
+                 Q136 398 142 406 Q148 416 138 427
+                 Q128 433 118 433 Q108 433 98 427Z"
+              fill="url(#gbk)" stroke="#3a1e10" stroke-width="3.8"/>
+        <!-- 3 toe bump lines -->
+        <path d="M103 420 Q105 428 107 420" fill="none" stroke="#4a2816" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M116 417 Q118 426 120 417" fill="none" stroke="#4a2816" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M129 420 Q131 428 133 420" fill="none" stroke="#4a2816" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- hit area -->
+        <ellipse id="pawLhit" cx="118" cy="416" rx="34" ry="28" fill="transparent"/>
+      </g>
+
+      <!-- ══ RIGHT PAW ══ -->
+      <g id="pawR" class="paw" role="button" tabindex="0" aria-label="触摸右爪，让小黑撒娇" style="cursor:pointer">
+        <!-- arm -->
+        <path d="M226 365 Q252 382 258 405 Q261 420 244 427"
+              fill="url(#gbk)" stroke="#3a1e10" stroke-width="4"
+              stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- paw -->
+        <path d="M224 427 Q214 433 204 427 Q194 416 200 406
+                 Q206 398 224 400 Q242 398 248 406 Q254 416 244 427
+                 Q234 433 224 427Z"
+              fill="url(#gbk)" stroke="#3a1e10" stroke-width="3.8"/>
+        <!-- toes -->
+        <path d="M209 420 Q211 428 213 420" fill="none" stroke="#4a2816" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M222 417 Q224 426 226 417" fill="none" stroke="#4a2816" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M235 420 Q237 428 239 420" fill="none" stroke="#4a2816" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- hit area -->
+        <ellipse id="pawRhit" cx="224" cy="416" rx="34" ry="28" fill="transparent"/>
+      </g>
+
+    </svg>
+  </div>
+
+  <div class="chips">
+    <div class="chip"><b>物种</b>黑猫精灵</div>
+    <div class="chip"><b>属性</b>自然元素</div>
+    <div class="chip"><b>外貌</b>幼体猫形</div>
+    <div class="chip"><b>特征</b>月牙眼·绿耳</div>
+  </div>
+
+  <div class="sdown">
+    <span>向下探索</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </div>
+</header>
+
+<!-- ═══ ABOUT ═══ -->
+<section class="sec">
+  <h2 class="sh">关于罗小黑</h2>
+  <div class="sr"></div>
+  <div class="grid">
+    <div class="card">
+      <h3>🐾 身份背景</h3>
+      <p>罗小黑是国产动画《罗小黑战记》主角，一只居住在森林的黑猫精灵。因人类侵占领地被迫流浪，踏上漫长旅途，遇见形形色色的精灵与人类。</p>
+    </div>
+    <div class="card">
+      <h3>✨ 外形特征</h3>
+      <p>通体漆黑的猫形幼体，拥有标志性的月牙形大眼睛，左耳内侧嫩绿色。表情沉静可爱，四肢短圆，是国漫史上最经典的萌系形象之一。</p>
+    </div>
+    <div class="card">
+      <h3>🌿 性格特点</h3>
+      <p>沉静、内敛，不善言辞，内心却无比柔软善良。对自然充满亲近感，对陌生事物保持警惕，却因真挚情感逐渐打开心扉。</p>
+    </div>
+    <div class="card">
+      <h3>⚡ 元素能力</h3>
+      <p>自然系精灵，拥有强大的空间类超能力——"空间裂隙"，可创造空间裂缝进行瞬移、攻击或防御，随成长日益精进。</p>
+    </div>
+    <div class="card w">
+      <h3>🎬 关于作品</h3>
+      <p>《罗小黑战记》由MTJJ（木头）创作，2011年开始网络连载，以独特画风、治愈氛围和深刻世界观收获大量忠实粉丝，被誉为国漫良心之作。2019年剧场版正式上映，探讨人类与精灵、自然与文明共存的深刻命题，同时保持治愈叙事风格。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ABILITIES ═══ -->
+<section class="sec" style="padding-top:0">
+  <h2 class="sh">超能力与技能</h2>
+  <div class="sr"></div>
+  <div class="tags">
+    <span class="tag">空间裂隙</span>
+    <span class="tag">瞬间移动</span>
+    <span class="tag">空间折叠</span>
+    <span class="tag g">自然感知</span>
+    <span class="tag g">精灵之力</span>
+    <span class="tag">超能觉醒</span>
+    <span class="tag g">治愈之心</span>
+    <span class="tag">黑猫变换</span>
+  </div>
+</section>
+
+<!-- ═══ QUOTE ═══ -->
+<section class="sec" style="padding-top:0">
+  <div class="qcard">
+    <blockquote>
+      这个世界上，精灵和人类一起生活着。<br>
+      有的精灵选择了争斗，有的精灵选择了共存。<br>
+      而我，只是想找到一个可以安心待着的地方。
+    </blockquote>
+    <cite>— 罗小黑 · 《罗小黑战记》</cite>
+  </div>
+</section>
+
+<footer>非官方角色介绍与互动页面。罗小黑角色及《罗小黑战记》相关权利归原权利人；致敬 MTJJ（木头）与《罗小黑战记》。互动制作 by Tabbit。</footer>
+
+<script>
+(function(){
+"use strict";
+const svg=document.getElementById('lxh'), stage=document.getElementById('stage');
+const pupL=document.getElementById('pupL'), pupR=document.getElementById('pupR');
+const EL={x:134,y:165,r:16}, ER={x:236,y:164,r:13};
+const prefersReduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+let pointer=null, raf=0;
+function movePupil(grp,ctr,p){const r=svg.getBoundingClientRect();if(!r.width||!r.height)return;const x=(p.x-r.left)*360/r.width,y=(p.y-r.top)*420/r.height,dx=x-ctr.x,dy=y-ctr.y,d=Math.hypot(dx,dy)||1,k=Math.min(d,ctr.r)/d;grp.setAttribute('transform',`translate(${(dx*k).toFixed(2)},${(dy*k).toFixed(2)})`);}
+function track(){if(!pointer){raf=0;return;}movePupil(pupL,EL,pointer);movePupil(pupR,ER,pointer);raf=requestAnimationFrame(track);}
+document.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'||e.pointerType==='pen'){pointer={x:e.clientX,y:e.clientY};if(!raf&&!prefersReduced.matches)raf=requestAnimationFrame(track);}},{passive:true});
+const msgs=['🐾 摸摸我嘛～','💙 抱抱小黑！','✨ 要吃鱼鱼！','🌿 陪我玩嘛～','😿 不许走！','💫 小黑撒娇！','🐟 鱼！鱼！鱼！','🌸 主人快看我！','😽 揉耳朵嘛～','💖 喜欢你啦！'];
+let mi=0,active=false,tid=0;
+const bub=document.getElementById('bub'),heyes=document.getElementById('happyEyes'),spk=document.getElementById('spk'),blL=document.getElementById('blL'),blR=document.getElementById('blR'),charS=svg;
+function spawnHeart(x,y){const pool=['❤️','💙','💚','💜','✨','🐾','💖','🌿'],h=document.createElement('span');h.className='hrt';h.setAttribute('aria-hidden','true');h.textContent=pool[Math.floor(Math.random()*pool.length)];const r=stage.getBoundingClientRect();h.style.left=(x-r.left+(Math.random()-.5)*44)+'px';h.style.top=(y-r.top-8)+'px';stage.appendChild(h);h.addEventListener('animationend',()=>h.remove(),{once:true});}
+function doSajiao(e){if(active)return;active=true;bub.textContent=msgs[mi++%msgs.length];bub.classList.add('on');heyes.setAttribute('opacity','1');spk.setAttribute('opacity','1');blL.setAttribute('opacity','.5');blR.setAttribute('opacity','.5');if(!prefersReduced.matches){charS.classList.add('sq');charS.addEventListener('animationend',()=>charS.classList.remove('sq'),{once:true});const x=e&&Number.isFinite(e.clientX)?e.clientX:innerWidth/2,y=e&&Number.isFinite(e.clientY)?e.clientY:innerHeight/2;for(let i=0;i<5;i++)setTimeout(()=>spawnHeart(x,y),i*100);}clearTimeout(tid);tid=setTimeout(()=>{bub.classList.remove('on');heyes.setAttribute('opacity','0');spk.setAttribute('opacity','0');blL.setAttribute('opacity','0');blR.setAttribute('opacity','0');active=false;},2500);}
+document.querySelectorAll('.paw').forEach(paw=>{paw.addEventListener('pointerdown',e=>{if(e.button!==undefined&&e.button!==0)return;e.preventDefault();doSajiao(e);});paw.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();doSajiao(null);}});});
+charS.addEventListener('pointerenter',()=>{if(!active)spk.setAttribute('opacity','.6')});charS.addEventListener('pointerleave',()=>{if(!active)spk.setAttribute('opacity','0')});
+})();
+</script>
+</body>
+</html>

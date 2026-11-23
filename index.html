@@ -2,11 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="format-detection" content="telephone=no">
 <title>青途校园</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
    青途校园 APP — 精修版 v2
@@ -58,7 +56,7 @@
 
 html, body {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   overflow: hidden;
   background: var(--cream);
 }
@@ -66,7 +64,8 @@ html, body {
 /* ── APP 根容器 ───────────────────────────── */
 .app-root {
   width: 100%;
-  height: 100%;
+  height: 100dvh;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   background: var(--cream);
@@ -253,7 +252,7 @@ html, body {
 }
 
 /* ── 页面切换 ─────────────────────────────── */
-.screen { display: none; flex-direction: column; height: 100%; }
+.screen { display: none; flex-direction: column; height: 100%; min-height: 0; }
 .screen.active { display: flex; }
 
 
@@ -1270,11 +1269,17 @@ html, body {
 .screen.active .func-card {
   animation: fadeSlideIn 0.35s cubic-bezier(0.22,1,0.36,1) both;
 }
+
+.prototype-notice { flex: 0 0 auto; padding: 6px 10px; text-align: center; font-size: 11px; line-height: 1.4; color: var(--text-2); background: var(--yellow-l); }
+:focus-visible { outline: 3px solid var(--lav-d); outline-offset: 3px; }
+@media(max-width:360px){.quick-grid{gap:5px;padding-left:12px;padding-right:12px}.quick-icon{width:46px;height:46px}.home-banner,.ai-recommend-card,.points-card{margin-left:12px;margin-right:12px}.section-hd{padding-left:12px;padding-right:12px}.order-list,.search-bar-wrap,.category-scroll,.func-grid{padding-left:12px;padding-right:12px}.profile-card,.menu-group{margin-left:12px;margin-right:12px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
 
 <div class="app-root" id="appRoot">
+<div class="prototype-notice" role="note">原型演示；AI、账户、资料上传、交易/接单等尚未接入；展示数据均为示例，不会实际上传资料或处理交易</div>
 
   <!-- ════════ 屏幕 1：首页 ════════ -->
   <div class="screen active" id="home-screen">
@@ -1797,6 +1802,7 @@ html, body {
 </div><!-- /app-root -->
 
 <script>
+document.querySelectorAll("[onclick]").forEach(el=>{if(!el.matches("button,a,input,select,textarea")){el.setAttribute("role","button");el.setAttribute("tabindex","0")}});document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches("[role=button][tabindex]")){e.preventDefault();e.target.click()}});
 /* ── 页面切换 ──────────────────────────── */
 const screens = {
   home:    'home-screen',

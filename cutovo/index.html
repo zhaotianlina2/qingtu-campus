@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cutovo · 赛博剪纸</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">✂️</span>
+      <span class="brand-name">Cutovo</span>
+    </div>
+    <div class="top-actions">
+      <label class="btn btn-upload" id="btnUpload">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        上传底图
+        <input type="file" id="fileInput" accept="image/*" hidden />
+      </label>
+      <button class="btn" id="btnBg">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        背景
+      </button>
+      <button class="btn btn-save" id="btnSave">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        保存
+      </button>
+    </div>
+  </header>
+
+  <!-- 主体区域 -->
+  <main class="workspace">
+    <!-- 画布容器 -->
+    <div class="canvas-wrap" id="canvasWrap">
+      <!-- 引导页 -->
+      <div class="onboarding" id="onboarding">
+        <div class="onboarding-card">
+          <div class="onboarding-icon">✂️</div>
+          <h2>赛博剪纸 · Cutovo</h2>
+          <p>上传照片 → 描摹轮廓 → 生成剪纸 → 导出手帐素材</p>
+          <p role="note" style="max-width:420px;margin:10px auto 16px;color:#6b7280;font-size:13px;line-height:1.6">隐私说明：所选照片和背景图仅在浏览器本地读取与处理，不会上传到本网站；导出文件由浏览器下载。</p>
+          <label class="btn btn-big">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            上传一张照片开始
+            <input type="file" id="onboardingFile" accept="image/*" hidden />
+          </label>
+        </div>
+      </div>
+
+      <!-- 画布层叠 -->
+      <div class="canvas-stack" id="canvasStack">
+        <canvas id="bgCanvas" class="layer-canvas"></canvas>
+        <canvas id="refCanvas" class="layer-canvas ref-layer"></canvas>
+        <canvas id="drawCanvas" class="layer-canvas draw-layer"></canvas>
+      </div>
+    </div>
+  </main>
+
+  <!-- 底部工具栏 -->
+  <footer class="toolbar">
+    <div class="tool-row">
+      <button class="tool" id="toolUndo" title="撤销" disabled>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        <span>撤销</span>
+      </button>
+      <button class="tool" id="toolRedo" title="重做" disabled>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        <span>重做</span>
+      </button>
+
+      <div class="divider"></div>
+
+      <button class="tool active" data-tool="brush" title="画笔">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+        <span>绘图</span>
+      </button>
+      <button class="tool" data-tool="eraser" title="橡皮擦">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16a1 1 0 0 1 0-1.4L13.6 4a1 1 0 0 1 1.4 0l6 6a1 1 0 0 1 0 1.4L10 22"/><line x1="18" y1="13" x2="9" y2="4"/></svg>
+        <span>橡皮</span>
+      </button>
+      <button class="tool" id="toolPicker" title="取色">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>取色</span>
+      </button>
+
+      <div class="divider"></div>
+
+      <button class="tool" id="toolTransform" title="变换">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <span>变换</span>
+      </button>
+      <button class="tool" id="toolLayer" title="图层">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        <span>图层</span>
+      </button>
+      <button class="tool" id="toolTexture" title="纹理">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>纹理</span>
+      </button>
+      <button class="tool" id="toolLayout" title="排版">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>排版</span>
+      </button>
+
+      <div class="divider"></div>
+
+      <button class="tool btn-export" id="toolExport" title="导出">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>导出</span>
+      </button>
+    </div>
+
+    <!-- 次级调节栏 -->
+    <div class="sub-row" id="subRow">
+      <div class="slider-group">
+        <label class="slider-label">精细</label>
+        <input type="range" id="smoothSlider" aria-label="笔触平滑度" min="0" max="100" value="20" />
+        <label class="slider-label">平滑</label>
+        <span class="slider-val" id="smoothVal">20%</span>
+      </div>
+
+      <div class="size-group">
+        <label>笔刷</label>
+        <input type="range" id="sizeSlider" aria-label="笔刷大小" min="1" max="50" value="6" />
+        <span class="slider-val" id="sizeVal">6px</span>
+      </div>
+
+      <div class="color-group">
+        <label>颜色</label>
+        <input type="color" id="colorPicker" value="#d4a5a5" />
+        <div class="preset-colors" id="presetColors">
+          <span class="dot" style="background:#d4a5a5" data-color="#d4a5a5"></span>
+          <span class="dot" style="background:#f5c6a5" data-color="#f5c6a5"></span>
+          <span class="dot" style="background:#c9d4a5" data-color="#c9d4a5"></span>
+          <span class="dot" style="background:#a5c9d4" data-color="#a5c9d4"></span>
+          <span class="dot" style="background:#c9a5d4" data-color="#c9a5d4"></span>
+          <span class="dot" style="background:#2c2c2c" data-color="#2c2c2c"></span>
+          <span class="dot" style="background:#ffffff;border:1px solid #ddd" data-color="#ffffff"></span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 背景设置弹层 -->
+  <div class="modal" id="bgModal" role="dialog" aria-modal="true" aria-label="背景设置" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>背景设置</h3>
+        <button class="close" id="closeBg" aria-label="关闭背景设置">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <h4>纯色背景</h4>
+          <div class="swatches" id="bgSwatches">
+            <span class="swatch active" style="background:#fdf6f2" data-color="#fdf6f2"></span>
+            <span class="swatch" style="background:#fef3e2" data-color="#fef3e2"></span>
+            <span class="swatch" style="background:#eaf4ec" data-color="#eaf4ec"></span>
+            <span class="swatch" style="background:#e8f0f8" data-color="#e8f0f8"></span>
+            <span class="swatch" style="background:#f4e8f0" data-color="#f4e8f0"></span>
+            <span class="swatch" style="background:#ffffff" data-color="#ffffff"></span>
+            <span class="swatch" style="background:#2d2d2d" data-color="#2d2d2d"></span>
+            <span class="swatch" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)" data-gradient="linear-gradient(135deg,#ffecd2,#fcb69f)"></span>
+          </div>
+          <div class="custom-color">
+            <label>自定义</label>
+            <input type="color" id="bgColorPicker" value="#fdf6f2" />
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <h4>纹理背景</h4>
+          <div class="textures" id="bgTextures">
+            <div class="texture-thumb t-plain active" data-texture="plain"><span>纯色</span></div>
+            <div class="texture-thumb t-paper" data-texture="paper"><span>纸张</span></div>
+            <div class="texture-thumb t-grid" data-texture="grid"><span>网格</span></div>
+            <div class="texture-thumb t-dot" data-texture="dot"><span>圆点</span></div>
+            <div class="texture-thumb t-stripe" data-texture="stripe"><span>条纹</span></div>
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <h4>自定义背景图</h4>
+          <label class="btn btn-ghost">
+            选择图片
+            <input type="file" id="bgFileInput" accept="image/*" hidden />
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 保存/导出弹层 -->
+  <div class="modal" id="saveModal" role="dialog" aria-modal="true" aria-label="导出作品" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>导出作品</h3>
+        <button class="close" id="closeSave" aria-label="关闭导出窗口">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="preview-box">
+          <div class="preview-wrap" id="exportPreview"></div>
+        </div>
+        <p class="export-note">SVG 文件仅以 PNG 位图作为内容嵌入，并非矢量剪纸路径。</p>
+        <div class="export-options">
+          <div class="option-group">
+            <label>格式</label>
+            <div class="seg">
+              <button class="seg-btn active" data-format="png">PNG</button>
+              <button class="seg-btn" data-format="svg">SVG（嵌入 PNG）</button>
+            </div>
+          </div>
+          <div class="option-group">
+            <label>透明底</label>
+            <label class="switch">
+              <input type="checkbox" id="optTransparent" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+        <button class="btn btn-big full" id="doExport">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          下载
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 图层面板 -->
+  <div class="side-panel" id="layerPanel">
+    <div class="panel-head">
+      <h4>图层</h4>
+      <button class="close" id="closeLayer" aria-label="关闭图层面板">✕</button>
+    </div>
+    <div class="panel-body">
+      <button class="btn btn-ghost small" id="addLayer">+ 新建图层</button>
+      <div class="layer-list" id="layerList"></div>
+    </div>
+  </div>
+
+  <!-- 变换面板 -->
+  <div class="side-panel" id="transformPanel">
+    <div class="panel-head">
+      <h4>变换</h4>
+      <button class="close" id="closeTransform" aria-label="关闭变换面板">✕</button>
+    </div>
+    <div class="panel-body">
+      <div class="t-group">
+        <label>不透明度</label>
+        <input type="range" id="opacityRange" aria-label="活动图层不透明度" min="0" max="100" value="100" />
+      </div>
+      <div class="t-btns">
+        <button class="t-btn" id="flipH">⇋ 水平翻转</button>
+        <button class="t-btn" id="flipV">⇵ 垂直翻转</button>
+        <button class="t-btn" id="rotL">↺ 左旋</button>
+        <button class="t-btn" id="rotR">↻ 右旋</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 纹理/填充面板 -->
+  <div class="side-panel" id="texturePanel">
+    <div class="panel-head">
+      <h4>填充 & 纹理</h4>
+      <button class="close" id="closeTexture" aria-label="关闭纹理面板">✕</button>
+    </div>
+    <div class="panel-body">
+      <div class="modal-section">
+        <h4>填充方式</h4>
+        <div class="seg">
+          <button class="seg-btn active" data-fill="solid">纯色</button>
+          <button class="seg-btn" data-fill="paper">纸张</button>
+          <button class="seg-btn" data-fill="gradient">渐变</button>
+          <button class="seg-btn" data-fill="outline">描边</button>
+        </div>
+      </div>
+      <div class="modal-section" id="fillGradientSection" style="display:none">
+        <h4>渐变颜色</h4>
+        <div class="dual-color">
+          <input type="color" id="gradCol1" value="#e8b4b8" />
+          <span>→</span>
+          <input type="color" id="gradCol2" value="#d88a95" />
+        </div>
+      </div>
+      <button class="btn btn-ghost full" id="applyPaperCut">一键生成剪纸效果</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

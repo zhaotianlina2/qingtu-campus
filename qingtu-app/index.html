@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>青途校园 · Q版马卡龙原型</title>
+<style>
+/* ============================================================
+   设计系统 tokens — 软糯马卡龙配色
+   Primary  : #A8D8B9  翠绿薄荷
+   Secondary: #FFB7C5  樱花粉
+   Accent   : #B5A9FF  薰衣草紫
+   Warm     : #FFE0A3  黄油奶黄
+   Neutral  : #FFF8F5  奶霜白
+   Text     : #3D3250  深紫棕
+   SubText  : #8E82A8  浅紫灰
+   ============================================================ */
+:root {
+  --mint:    #A8D8B9;
+  --mint-d:  #7DC8A0;
+  --pink:    #FFB7C5;
+  --pink-d:  #FF8FAA;
+  --lavender:#B5A9FF;
+  --lav-d:   #8E80F0;
+  --yellow:  #FFE0A3;
+  --yellow-d:#FFD07A;
+  --cream:   #FFF8F5;
+  --white:   #FFFFFF;
+  --text:    #3D3250;
+  --sub:     #8E82A8;
+  --card:    #FFFFFF;
+  --border:  rgba(169,160,215,0.18);
+  --shadow:  0 6px 28px rgba(120,100,200,0.10);
+  --shadow-s:0 2px 12px rgba(120,100,200,0.08);
+  --r-lg:    24px;
+  --r-md:    16px;
+  --r-sm:    12px;
+  --r-xs:    8px;
+  font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+/* ── 外框：模拟手机壳 ───────────────────────── */
+body {
+  background: linear-gradient(135deg, #EDE8FF 0%, #FFE8F2 50%, #E8F8EF 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px 40px;
+}
+
+.phone-shell {
+  width: min(390px, 100%);
+  height: min(844px, 82svh);
+  min-height: 560px;
+  background: #1a1a2e;
+  border-radius: 52px;
+  padding: 14px;
+  box-shadow:
+    0 0 0 2px #2a2a4a,
+    0 30px 80px rgba(0,0,0,0.45),
+    inset 0 0 20px rgba(0,0,0,0.2);
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* 刘海 */
+.phone-shell::before {
+  content: '';
+  position: absolute;
+  top: 14px; left: 50%;
+  transform: translateX(-50%);
+  width: 120px; height: 34px;
+  background: #1a1a2e;
+  border-radius: 0 0 20px 20px;
+  z-index: 100;
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 40px;
+  overflow: hidden;
+  background: var(--cream);
+  position: relative;
+}
+
+/* ── 页面容器 ───────────────────────────────── */
+.app-root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--cream);
+  overflow: hidden;
+}
+
+/* 状态栏 */
+.status-bar {
+  height: 50px;
+  padding: 14px 24px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+.status-time { font-size: 15px; font-weight: 700; color: var(--text); }
+.status-icons { display: flex; gap: 6px; align-items: center; }
+.status-icons span { font-size: 13px; }
+
+/* 滚动内容区 */
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.scroll-area::-webkit-scrollbar { display: none; }
+
+/* 底部导航 */
+.tab-bar {
+  height: 72px;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px 8px;
+  flex-shrink: 0;
+  box-shadow: 0 -4px 20px rgba(120,100,200,0.06);
+}
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 6px 0;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.tab-item .tab-icon {
+  font-size: 22px;
+  line-height: 1;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.tab-item .tab-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--sub);
+  transition: color 0.2s;
+}
+.tab-item.active .tab-label { color: var(--lav-d); font-weight: 700; }
+.tab-item.active .tab-icon { transform: scale(1.18) translateY(-2px); }
+.tab-item.active .tab-dot {
+  width: 4px; height: 4px;
+  border-radius: 2px;
+  background: var(--lavender);
+}
+
+/* ── 通用组件 ─────────────────────────────── */
+/* 页头 */
+.page-header {
+  padding: 8px 20px 0;
+}
+.page-title { font-size: 24px; font-weight: 900; color: var(--text); letter-spacing: -0.3px; }
+.page-sub   { font-size: 13px; color: var(--sub); margin-top: 3px; }
+
+/* 卡片 */
+.card {
+  background: var(--card);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-s);
+  border: 1px solid var(--border);
+}
+
+/* 标签 */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-mint    { background: oklch(from var(--mint)    l c h / 0.18); color: var(--mint-d); }
+.badge-pink    { background: oklch(from var(--pink)    l c h / 0.18); color: var(--pink-d); }
+.badge-lav     { background: oklch(from var(--lavender)l c h / 0.18); color: var(--lav-d); }
+.badge-yellow  { background: oklch(from var(--yellow)  l c h / 0.22); color: #C88B00; }
+
+/* 按钮 */
+.btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  border: none;
+  outline: none;
+}
+.btn-pill:active { transform: scale(0.94); }
+.btn-primary { background: linear-gradient(135deg, var(--lavender), var(--lav-d)); color: #fff; box-shadow: 0 4px 16px rgba(140,128,240,0.35); }
+.btn-mint    { background: linear-gradient(135deg, var(--mint), var(--mint-d)); color: #fff; box-shadow: 0 4px 16px rgba(125,200,160,0.35); }
+.btn-ghost   { background: var(--white); color: var(--text); border: 1.5px solid var(--border); }
+.btn-sm      { padding: 6px 16px; font-size: 12px; }
+
+/* ── 屏幕切换 ─────────────────────────────── */
+.screen { display: none; flex-direction: column; height: 100%; }
+.screen.active { display: flex; }
+
+/* ============================================================
+   屏幕 1：首页
+   ============================================================ */
+#home-screen .scroll-area { padding: 0 0 16px; }
+
+/* 顶部问候横幅 */
+.home-banner {
+  margin: 12px 20px 0;
+  padding: 20px 20px 0;
+  background: linear-gradient(135deg, #D4C9FF 0%, #FFD6E7 100%);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  position: relative;
+  min-height: 130px;
+}
+.home-banner-text { position: relative; z-index: 2; }
+.home-banner-text .greeting { font-size: 13px; color: var(--lav-d); font-weight: 600; }
+.home-banner-text .name     { font-size: 22px; font-weight: 900; color: var(--text); margin-top: 3px; }
+.home-banner-text .tagline  { font-size: 12px; color: var(--sub); margin-top: 4px; }
+.home-banner-deco {
+  position: absolute;
+  right: -10px; bottom: -10px;
+  font-size: 88px;
+  opacity: 0.22;
+  line-height: 1;
+  user-select: none;
+}
+.home-banner-btn {
+  margin-top: 16px;
+  margin-bottom: 20px;
+}
+
+/* 快捷入口 */
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 4px 20px 0;
+}
+.quick-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+}
+.quick-icon {
+  width: 52px; height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: var(--shadow-s);
+  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.quick-item:active .quick-icon { transform: scale(0.88); }
+.qi-lav    { background: linear-gradient(135deg, #D4C9FF, #B5A9FF); }
+.qi-pink   { background: linear-gradient(135deg, #FFD6E7, #FFB7C5); }
+.qi-mint   { background: linear-gradient(135deg, #C8EED8, #A8D8B9); }
+.qi-yellow { background: linear-gradient(135deg, #FFF0C8, #FFE0A3); }
+.quick-label { font-size: 11px; color: var(--text); font-weight: 500; }
+
+/* 区块标题 */
+.section-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 10px;
+}
+.section-hd .title { font-size: 16px; font-weight: 800; color: var(--text); }
+.section-hd .more  { font-size: 12px; color: var(--lav-d); font-weight: 600; cursor: pointer; }
+
+/* AI 今日推荐卡 */
+.ai-recommend-card {
+  margin: 0 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, #EDE8FF 0%, #FFE8F4 100%);
+  border-radius: var(--r-lg);
+  border: 1px solid rgba(181,169,255,0.25);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.ai-recommend-card:active { transform: scale(0.97); }
+.ai-rec-icon {
+  width: 50px; height: 50px;
+  background: linear-gradient(135deg, var(--lavender), var(--lav-d));
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(140,128,240,0.3);
+}
+.ai-rec-body { flex: 1; min-width: 0; }
+.ai-rec-tag  { font-size: 10px; color: var(--lav-d); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.ai-rec-title{ font-size: 14px; font-weight: 700; color: var(--text); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ai-rec-sub  { font-size: 11px; color: var(--sub); margin-top: 2px; }
+.ai-rec-arrow{ font-size: 18px; color: var(--lavender); flex-shrink: 0; }
+
+/* 接单榜横向滚动 */
+.order-scroll {
+  display: flex;
+  gap: 12px;
+  padding: 0 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.order-scroll::-webkit-scrollbar { display: none; }
+.order-mini-card {
+  flex-shrink: 0;
+  width: 140px;
+  background: var(--white);
+  border-radius: var(--r-md);
+  padding: 14px 12px;
+  box-shadow: var(--shadow-s);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.18s;
+}
+.order-mini-card:active { transform: scale(0.95); }
+.omc-emoji { font-size: 28px; margin-bottom: 8px; }
+.omc-title { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3; }
+.omc-price { font-size: 16px; font-weight: 900; color: var(--lav-d); margin-top: 6px; }
+.omc-price span { font-size: 11px; font-weight: 500; color: var(--sub); }
+
+/* ============================================================
+   屏幕 2：AI 学习
+   ============================================================ */
+#ai-screen {
+  background: var(--cream);
+}
+#ai-screen .scroll-area { padding: 0 0 16px; }
+
+/* AI 主卡 */
+.ai-hero-card {
+  margin: 12px 20px 0;
+  background: linear-gradient(135deg, #312A5E 0%, #4A3F8A 50%, #5A4498 100%);
+  border-radius: 28px;
+  padding: 24px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(60,45,140,0.35);
+}
+.ai-hero-card::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+.ai-hero-card::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: 30px;
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.ai-hero-label { font-size: 11px; color: rgba(255,255,255,0.65); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.ai-hero-title { font-size: 26px; font-weight: 900; color: #fff; margin-top: 6px; line-height: 1.2; }
+.ai-hero-sub   { font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 6px; }
+.ai-hero-btn   { margin-top: 20px; display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); padding: 9px 18px; border-radius: 50px; font-size: 13px; font-weight: 700; color: #fff; cursor: pointer; transition: background 0.2s; border: 1px solid rgba(255,255,255,0.2); }
+.ai-hero-btn:hover { background: rgba(255,255,255,0.22); }
+
+/* 功能卡片 grid */
+.func-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 20px;
+}
+.func-card {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  padding: 16px 14px;
+  box-shadow: var(--shadow-s);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+  overflow: hidden;
+}
+.func-card:active { transform: scale(0.95); }
+.func-card-emoji { font-size: 30px; margin-bottom: 10px; line-height: 1; }
+.func-card-title { font-size: 14px; font-weight: 800; color: var(--text); }
+.func-card-desc  { font-size: 11px; color: var(--sub); margin-top: 4px; line-height: 1.4; }
+.func-card-deco  {
+  position: absolute;
+  bottom: -8px; right: -8px;
+  font-size: 44px;
+  opacity: 0.08;
+  user-select: none;
+}
+.fc-lav   { border-top: 3px solid var(--lavender); }
+.fc-pink  { border-top: 3px solid var(--pink); }
+.fc-mint  { border-top: 3px solid var(--mint); }
+.fc-yellow{ border-top: 3px solid var(--yellow-d); }
+
+/* AI 聊天预览区 */
+.chat-preview {
+  margin: 0 20px;
+  background: var(--white);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-s);
+  overflow: hidden;
+}
+.chat-header {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.chat-avatar {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--lavender), var(--lav-d));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.chat-name  { font-size: 14px; font-weight: 700; color: var(--text); }
+.chat-status{ font-size: 11px; color: var(--mint-d); font-weight: 600; }
+.chat-msgs  { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+.msg-row    { display: flex; gap: 8px; align-items: flex-start; }
+.msg-row.me { flex-direction: row-reverse; }
+.msg-bubble {
+  max-width: 72%;
+  padding: 9px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.msg-row:not(.me) .msg-bubble { background: #F0EEFF; border-top-left-radius: 4px; }
+.msg-row.me       .msg-bubble { background: linear-gradient(135deg, var(--lavender), var(--lav-d)); color: #fff; border-top-right-radius: 4px; }
+.msg-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.ai-avatar  { background: linear-gradient(135deg, var(--lavender), var(--lav-d)); }
+.user-avatar{ background: linear-gradient(135deg, var(--pink), var(--pink-d)); }
+.chat-input-bar {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #FAF8FF;
+}
+.chat-input-fake {
+  flex: 1;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 9px 14px;
+  font-size: 13px;
+  color: var(--sub);
+}
+.chat-send-btn {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--lavender), var(--lav-d));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(140,128,240,0.4);
+}
+
+/* ============================================================
+   屏幕 3：接单广场
+   ============================================================ */
+#order-screen {
+  background: var(--cream);
+}
+#order-screen .scroll-area { padding: 0 0 16px; }
+
+/* 搜索栏 */
+.search-bar-wrap {
+  padding: 8px 20px 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.search-bar {
+  flex: 1;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 50px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--sub);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-s);
+}
+.search-bar-icon { font-size: 16px; }
+.filter-btn {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, var(--lavender), var(--lav-d));
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(140,128,240,0.3);
+}
+
+/* 分类 tags */
+.category-scroll {
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.category-scroll::-webkit-scrollbar { display: none; }
+.cat-tag {
+  flex-shrink: 0;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  border: 1.5px solid var(--border);
+  color: var(--sub);
+  background: var(--white);
+}
+.cat-tag.active {
+  background: linear-gradient(135deg, var(--lavender), var(--lav-d));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 3px 10px rgba(140,128,240,0.3);
+}
+
+/* 发布浮动按钮 */
+.fab {
+  position: fixed;
+  bottom: 90px;
+  right: calc(50% - 195px + 20px);
+  width: 52px; height: 52px;
+  background: linear-gradient(135deg, var(--lavender), var(--lav-d));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  color: #fff;
+  box-shadow: 0 6px 24px rgba(140,128,240,0.4);
+  cursor: pointer;
+  z-index: 50;
+  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.fab:active { transform: scale(0.88); }
+
+/* 接单卡片 */
+.order-list { display: flex; flex-direction: column; gap: 12px; padding: 12px 20px 0; }
+.order-card {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-s);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.18s;
+}
+.order-card:active { transform: scale(0.97); }
+.oc-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.oc-main { flex: 1; min-width: 0; }
+.oc-title { font-size: 15px; font-weight: 800; color: var(--text); }
+.oc-desc  { font-size: 12px; color: var(--sub); margin-top: 4px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.oc-price-box {
+  text-align: right;
+  flex-shrink: 0;
+}
+.oc-price-val { font-size: 20px; font-weight: 900; color: var(--lav-d); line-height: 1; }
+.oc-price-unit{ font-size: 10px; color: var(--sub); margin-top: 2px; }
+.oc-footer {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.oc-poster {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.oc-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+}
+.oc-poster-name { font-size: 12px; color: var(--sub); font-weight: 500; }
+.oc-footer-right { display: flex; gap: 8px; align-items: center; }
+
+/* 空状态标签 / 装饰 */
+.decor-cloud {
+  font-size: 80px;
+  line-height: 1;
+  opacity: 0.12;
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── 外围：版本切换 / 说明 ────────────────── */
+.outer-wrap {
+  width: min(390px, 100%);
+  margin-top: 24px;
+  text-align: center;
+}
+.outer-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: #3D3250;
+  margin-bottom: 6px;
+}
+.outer-sub {
+  font-size: 13px;
+  color: #8E82A8;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+.preview-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.preview-btn {
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  border: 2px solid transparent;
+}
+.preview-btn.active {
+  background: linear-gradient(135deg, var(--lavender), var(--lav-d));
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(140,128,240,0.35);
+}
+.preview-btn:not(.active) {
+  background: #fff;
+  color: var(--text);
+  border-color: var(--border);
+}
+.preview-btn:active { transform: scale(0.93); }
+
+/* 下方说明卡 */
+.info-card {
+  width: min(390px, 100%);
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 4px 20px rgba(120,100,200,0.08);
+  border: 1px solid var(--border);
+  text-align: left;
+}
+.info-card h3 { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 12px; }
+.info-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.info-row:last-child { margin-bottom: 0; }
+.info-emoji { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.info-text { font-size: 12px; color: var(--sub); line-height: 1.6; }
+.info-text strong { color: var(--text); }
+
+/* 响应式：屏幕太小时缩放 */
+@media(max-width:480px){body{padding:8px 12px 20px;justify-content:flex-start}.phone-shell{width:min(390px,100%);height:min(844px,78svh);min-height:500px;border-radius:32px;padding:10px}.phone-screen{border-radius:24px}.outer-wrap,.info-card{width:min(390px,100%)}.fab{right:max(20px,calc((100vw - 390px)/2 + 20px))}}
+@media(max-height:650px){.phone-shell{height:78svh;min-height:440px}}
+.prototype-notice{margin:8px 20px 0;padding:6px 9px;text-align:center;font-size:10px;line-height:1.4;color:var(--text);background:var(--yellow);border-radius:10px}
+:focus-visible{outline:3px solid var(--lav-d);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<!-- ░░░░░ 手机壳 ░░░░░ -->
+<div class="phone-shell">
+  <div class="phone-screen">
+    <div class="app-root" id="appRoot">
+<div class="prototype-notice" role="note">原型演示；AI、账户、资料上传、交易/接单等尚未接入；展示数据均为示例，不会实际上传资料或处理交易</div>
+
+      <!-- 状态栏 -->
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <span>📶</span>
+          <span>🔋</span>
+        </div>
+      </div>
+
+      <!-- ════════ 屏幕 1：首页 ════════ -->
+      <div class="screen active" id="home-screen">
+        <div class="scroll-area">
+          <!-- 问候横幅 -->
+          <div class="home-banner">
+            <div class="home-banner-text">
+              <div class="greeting">✨ 早上好</div>
+              <div class="name">同学，今天也加油！</div>
+              <div class="tagline">用 AI 学得更快，靠技能赚得更多</div>
+              <div class="home-banner-btn">
+                <button class="btn-pill btn-primary btn-sm" onclick="switchTab('ai')">🤖 立即提问 AI</button>
+              </div>
+            </div>
+            <div class="home-banner-deco">🌸</div>
+          </div>
+
+          <!-- 快捷入口 -->
+          <div class="quick-grid" style="margin-top:20px;">
+            <div class="quick-item" onclick="switchTab('ai')">
+              <div class="quick-icon qi-lav">🤖</div>
+              <div class="quick-label">AI 答疑</div>
+            </div>
+            <div class="quick-item" onclick="switchTab('ai')">
+              <div class="quick-icon qi-pink">📝</div>
+              <div class="quick-label">笔记整理</div>
+            </div>
+            <div class="quick-item" onclick="switchTab('order')">
+              <div class="quick-icon qi-mint">💼</div>
+              <div class="quick-label">校园接单</div>
+            </div>
+            <div class="quick-item">
+              <div class="quick-icon qi-yellow">🎁</div>
+              <div class="quick-label">积分兑换</div>
+            </div>
+          </div>
+
+          <!-- AI 今日推荐 -->
+          <div class="section-hd">
+            <span class="title">🤖 AI 今日推荐</span>
+            <span class="more">更多 ›</span>
+          </div>
+          <div class="ai-recommend-card" onclick="switchTab('ai')">
+            <div class="ai-rec-icon">✨</div>
+            <div class="ai-rec-body">
+              <div class="ai-rec-tag">AI 帮你整理</div>
+              <div class="ai-rec-title">高数第三章：极限与连续</div>
+              <div class="ai-rec-sub">3 分钟生成思维导图 · 附配套习题</div>
+            </div>
+            <div class="ai-rec-arrow">›</div>
+          </div>
+
+          <!-- 接单广场预览 -->
+          <div class="section-hd">
+            <span class="title">💼 最新接单</span>
+            <span class="more" onclick="switchTab('order')">全部 ›</span>
+          </div>
+          <div class="order-scroll">
+            <div class="order-mini-card" onclick="switchTab('order')">
+              <div class="omc-emoji">🎨</div>
+              <div class="omc-title">海报设计 · 急</div>
+              <div class="omc-price">¥60 <span>/ 次</span></div>
+            </div>
+            <div class="order-mini-card" onclick="switchTab('order')">
+              <div class="omc-emoji">📹</div>
+              <div class="omc-title">剪辑短视频</div>
+              <div class="omc-price">¥80 <span>/ 条</span></div>
+            </div>
+            <div class="order-mini-card" onclick="switchTab('order')">
+              <div class="omc-emoji">📚</div>
+              <div class="omc-title">英语润色</div>
+              <div class="omc-price">¥30 <span>/ 千字</span></div>
+            </div>
+            <div class="order-mini-card" onclick="switchTab('order')">
+              <div class="omc-emoji">💻</div>
+              <div class="omc-title">Python 作业</div>
+              <div class="omc-price">¥50 <span>/ 次</span></div>
+            </div>
+          </div>
+
+          <!-- 积分卡 -->
+          <div class="section-hd">
+            <span class="title">🌟 我的积分</span>
+            <span class="more">详情 ›</span>
+          </div>
+          <div class="card" style="margin: 0 20px; padding: 16px; background: linear-gradient(135deg, #FFF0C8, #FFE0A3); border: none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div>
+                <div style="font-size:11px;color:#C88B00;font-weight:700;">累计积分</div>
+                <div style="font-size:34px;font-weight:900;color:#3D3250;margin-top:2px;">2,480</div>
+                <div style="font-size:11px;color:#8E82A8;margin-top:3px;">再积 520 分解锁会员</div>
+              </div>
+              <div style="font-size:60px;opacity:0.25;user-select:none;">⭐</div>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px;">
+              <button class="btn-pill btn-sm" style="background:rgba(255,255,255,0.7);color:#3D3250;border:none;font-weight:700;">签到 +10</button>
+              <button class="btn-pill btn-sm" style="background:rgba(200,139,0,0.15);color:#C88B00;border:none;font-weight:700;">去兑换</button>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+
+        <!-- 底部 tab -->
+        <div class="tab-bar" id="tabBar-home">
+          <div class="tab-item active" onclick="switchTab('home')">
+            <div class="tab-icon">🏠</div>
+            <div class="tab-label">首页</div>
+          </div>
+          <div class="tab-item" onclick="switchTab('ai')">
+            <div class="tab-icon">🤖</div>
+            <div class="tab-label">AI 学习</div>
+          </div>
+          <div class="tab-item" onclick="switchTab('order')">
+            <div class="tab-icon">💼</div>
+            <div class="tab-label">接单</div>
+          </div>
+          <div class="tab-item" onclick="switchTab('profile')">
+            <div class="tab-icon">👤</div>
+            <div class="tab-label">我的</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════ 屏幕 2：AI 学习 ════════ -->
+      <div class="screen" id="ai-screen">
+        <div class="scroll-area">
+          <!-- AI 主视觉卡 -->
+          <div class="ai-hero-card">
+            <div class="ai-hero-label">✦ AI STUDY BUDDY</div>
+            <div class="ai-hero-title">青途 AI<br>你的学习搭子 🤖</div>
+            <div class="ai-hero-sub">笔记整理 · 答疑 · 论文润色<br>一切交给 AI，学习更轻松</div>
+            <div class="ai-hero-btn">📸 拍照答题 &nbsp;→</div>
+          </div>
+
+          <!-- 四大功能卡 -->
+          <div class="section-hd">
+            <span class="title">选择功能</span>
+          </div>
+          <div class="func-grid">
+            <div class="func-card fc-lav">
+              <div class="func-card-emoji">📸</div>
+              <div class="func-card-title">拍照答疑</div>
+              <div class="func-card-desc">拍下题目，AI 秒解分析</div>
+              <div class="func-card-deco">📸</div>
+            </div>
+            <div class="func-card fc-pink">
+              <div class="func-card-emoji">📝</div>
+              <div class="func-card-title">笔记整理</div>
+              <div class="func-card-desc">上传课件，生成思维导图</div>
+              <div class="func-card-deco">📝</div>
+            </div>
+            <div class="func-card fc-mint">
+              <div class="func-card-emoji">✍️</div>
+              <div class="func-card-title">论文润色</div>
+              <div class="func-card-desc">中英文润色、降重建议</div>
+              <div class="func-card-deco">✍️</div>
+            </div>
+            <div class="func-card fc-yellow">
+              <div class="func-card-emoji">🎯</div>
+              <div class="func-card-title">模拟面试</div>
+              <div class="func-card-desc">AI 出题 · 实时点评反馈</div>
+              <div class="func-card-deco">🎯</div>
+            </div>
+          </div>
+
+          <!-- AI 聊天预览 -->
+          <div class="section-hd">
+            <span class="title">💬 和 AI 聊一聊</span>
+            <span class="more" style="color:var(--mint-d);">● 在线</span>
+          </div>
+          <div class="chat-preview">
+            <div class="chat-header">
+              <div class="chat-avatar">🤖</div>
+              <div>
+                <div class="chat-name">青途 AI 助手</div>
+                <div class="chat-status">● 随时在线</div>
+              </div>
+            </div>
+            <div class="chat-msgs">
+              <div class="msg-row">
+                <div class="msg-avatar ai-avatar">🤖</div>
+                <div class="msg-bubble">你好同学！有什么我可以帮助你的吗？✨</div>
+              </div>
+              <div class="msg-row me">
+                <div class="msg-avatar user-avatar">🙋</div>
+                <div class="msg-bubble">帮我讲一下高数里的极限概念吧</div>
+              </div>
+              <div class="msg-row">
+                <div class="msg-avatar ai-avatar">🤖</div>
+                <div class="msg-bubble">好的！极限是描述函数在某点趋近时的行为。简单说：当 x→a 时，f(x) 无限接近某个值 L，就叫做极限值 🎯</div>
+              </div>
+            </div>
+            <div class="chat-input-bar">
+              <div class="chat-input-fake">输入问题或上传图片…</div>
+              <div class="chat-send-btn">➤</div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab-item" onclick="switchTab('home')">
+            <div class="tab-icon">🏠</div>
+            <div class="tab-label">首页</div>
+          </div>
+          <div class="tab-item active" onclick="switchTab('ai')">
+            <div class="tab-icon">🤖</div>
+            <div class="tab-label">AI 学习</div>
+          </div>
+          <div class="tab-item" onclick="switchTab('order')">
+            <div class="tab-icon">💼</div>
+            <div class="tab-label">接单</div>
+          </div>
+          <div class="tab-item" onclick="switchTab('profile')">
+            <div class="tab-icon">👤</div>
+            <div class="tab-label">我的</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════ 屏幕 3：接单广场 ════════ -->
+      <div class="screen" id="order-screen">
+        <div style="padding:8px 20px 0;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:22px;font-weight:900;color:var(--text);">接单广场</div>
+            <div style="font-size:12px;color:var(--sub);margin-top:2px;">校园技能变现 · 在校即可接单</div>
+          </div>
+          <button class="btn-pill btn-primary btn-sm" style="flex-shrink:0;" onclick="alert('发布接单 · 后续功能开发中 🚀')">＋ 发布</button>
+        </div>
+
+        <div class="scroll-area">
+          <!-- 搜索栏 -->
+          <div class="search-bar-wrap">
+            <div class="search-bar">
+              <span class="search-bar-icon">🔍</span>
+              <span>搜索技能或需求…</span>
+            </div>
+            <div class="filter-btn">⚙️</div>
+          </div>
+
+          <!-- 分类 tags -->
+          <div class="category-scroll" style="margin-top:12px;">
+            <div class="cat-tag active" onclick="setActiveTag(this)">全部</div>
+            <div class="cat-tag" onclick="setActiveTag(this)">🎨 设计</div>
+            <div class="cat-tag" onclick="setActiveTag(this)">💻 编程</div>
+            <div class="cat-tag" onclick="setActiveTag(this)">📹 视频</div>
+            <div class="cat-tag" onclick="setActiveTag(this)">📝 写作</div>
+            <div class="cat-tag" onclick="setActiveTag(this)">🌍 翻译</div>
+            <div class="cat-tag" onclick="setActiveTag(this)">🎵 音乐</div>
+          </div>
+
+          <!-- 接单列表 -->
+          <div class="order-list">
+
+            <div class="order-card">
+              <div class="oc-top">
+                <div class="oc-main">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                    <span class="badge badge-pink">🔥 急单</span>
+                    <span class="badge badge-lav">设计</span>
+                  </div>
+                  <div class="oc-title">活动海报设计 · 社团年终晚会</div>
+                  <div class="oc-desc">需要设计一张 A3 竖版海报，风格简约时尚，提供素材和文案，要求 2 天内交付</div>
+                </div>
+                <div class="oc-price-box">
+                  <div class="oc-price-val">¥80</div>
+                  <div class="oc-price-unit">一口价</div>
+                </div>
+              </div>
+              <div class="oc-footer">
+                <div class="oc-poster">
+                  <div class="oc-avatar" style="background:linear-gradient(135deg,var(--pink),var(--pink-d));">🌸</div>
+                  <span class="oc-poster-name">林同学 · 文学院</span>
+                </div>
+                <div class="oc-footer-right">
+                  <span style="font-size:11px;color:var(--sub);">3人已接</span>
+                  <button class="btn-pill btn-primary btn-sm">接单</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="order-card">
+              <div class="oc-top">
+                <div class="oc-main">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                    <span class="badge badge-mint">长期</span>
+                    <span class="badge badge-lav">编程</span>
+                  </div>
+                  <div class="oc-title">Python 数据分析作业辅导</div>
+                  <div class="oc-desc">每周 1 次，每次 1 小时，在线视频即可，需要讲解 Pandas / Matplotlib 基础</div>
+                </div>
+                <div class="oc-price-box">
+                  <div class="oc-price-val">¥60</div>
+                  <div class="oc-price-unit">/ 小时</div>
+                </div>
+              </div>
+              <div class="oc-footer">
+                <div class="oc-poster">
+                  <div class="oc-avatar" style="background:linear-gradient(135deg,var(--mint),var(--mint-d));">🌿</div>
+                  <span class="oc-poster-name">王同学 · 经管学院</span>
+                </div>
+                <div class="oc-footer-right">
+                  <span style="font-size:11px;color:var(--sub);">1人已接</span>
+                  <button class="btn-pill btn-mint btn-sm">接单</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="order-card">
+              <div class="oc-top">
+                <div class="oc-main">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                    <span class="badge badge-yellow">💰 高薪</span>
+                    <span class="badge badge-lav">视频</span>
+                  </div>
+                  <div class="oc-title">Vlog 剪辑 · 毕业纪念短片</div>
+                  <div class="oc-desc">素材已拍好，约 30 分钟原始素材，剪辑成 5 分钟精华版，需要添加字幕和背景音乐</div>
+                </div>
+                <div class="oc-price-box">
+                  <div class="oc-price-val">¥120</div>
+                  <div class="oc-price-unit">一口价</div>
+                </div>
+              </div>
+              <div class="oc-footer">
+                <div class="oc-poster">
+                  <div class="oc-avatar" style="background:linear-gradient(135deg,var(--yellow),var(--yellow-d));">⭐</div>
+                  <span class="oc-poster-name">陈同学 · 新闻传播</span>
+                </div>
+                <div class="oc-footer-right">
+                  <span style="font-size:11px;color:var(--sub);">0人已接</span>
+                  <button class="btn-pill btn-primary btn-sm">接单</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="order-card">
+              <div class="oc-top">
+                <div class="oc-main">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                    <span class="badge badge-pink">📚 资料</span>
+                    <span class="badge badge-mint">写作</span>
+                  </div>
+                  <div class="oc-title">考研政治押题笔记</div>
+                  <div class="oc-desc">整理了完整的马原、近代史、毛中特笔记，共 80 页 PDF，已过一战同学亲测</div>
+                </div>
+                <div class="oc-price-box">
+                  <div class="oc-price-val">¥25</div>
+                  <div class="oc-price-unit">/ 份</div>
+                </div>
+              </div>
+              <div class="oc-footer">
+                <div class="oc-poster">
+                  <div class="oc-avatar" style="background:linear-gradient(135deg,var(--lavender),var(--lav-d));">📖</div>
+                  <span class="oc-poster-name">赵同学 · 研究生</span>
+                </div>
+                <div class="oc-footer-right">
+                  <span style="font-size:11px;color:var(--sub);">已售 47 份</span>
+                  <button class="btn-pill btn-primary btn-sm">购买</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab-item" onclick="switchTab('home')">
+            <div class="tab-icon">🏠</div>
+            <div class="tab-label">首页</div>
+          </div>
+          <div class="tab-item" onclick="switchTab('ai')">
+            <div class="tab-icon">🤖</div>
+            <div class="tab-label">AI 学习</div>
+          </div>
+          <div class="tab-item active" onclick="switchTab('order')">
+            <div class="tab-icon">💼</div>
+            <div class="tab-label">接单</div>
+          </div>
+          <div class="tab-item" onclick="switchTab('profile')">
+            <div class="tab-icon">👤</div>
+            <div class="tab-label">我的</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════ 屏幕 4：我的 ════════ -->
+      <div class="screen" id="profile-screen">
+        <div class="scroll-area">
+          <!-- 用户卡 -->
+          <div style="margin:12px 20px 0;background:linear-gradient(135deg,#EDE8FF 0%,#FFE8F4 100%);border-radius:28px;padding:24px;position:relative;overflow:hidden;">
+            <div style="font-size:60px;position:absolute;right:-10px;top:-10px;opacity:0.12;user-select:none;">🎓</div>
+            <div style="display:flex;align-items:center;gap:16px;position:relative;z-index:2;">
+              <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--lavender),var(--lav-d));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 4px 16px rgba(140,128,240,0.35);">🐣</div>
+              <div>
+                <div style="font-size:18px;font-weight:900;color:var(--text);">李同学</div>
+                <div style="font-size:12px;color:var(--sub);margin-top:3px;">计算机科学 · 大二</div>
+                <div style="margin-top:6px;display:flex;gap:6px;">
+                  <span class="badge badge-lav">✓ 已认证</span>
+                  <span class="badge badge-mint">Lv.3 学霸</span>
+                </div>
+              </div>
+            </div>
+            <!-- 数据统计 -->
+            <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;position:relative;z-index:2;">
+              <div style="text-align:center;">
+                <div style="font-size:22px;font-weight:900;color:var(--text);">2,480</div>
+                <div style="font-size:11px;color:var(--sub);margin-top:2px;">积分</div>
+              </div>
+              <div style="text-align:center;border-left:1px solid rgba(169,160,215,0.25);border-right:1px solid rgba(169,160,215,0.25);">
+                <div style="font-size:22px;font-weight:900;color:var(--text);">¥360</div>
+                <div style="font-size:11px;color:var(--sub);margin-top:2px;">累计收入</div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:22px;font-weight:900;color:var(--text);">6</div>
+                <div style="font-size:11px;color:var(--sub);margin-top:2px;">已完成单</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 菜单列表 -->
+          <div class="section-hd"><span class="title">📋 我的服务</span></div>
+          <div style="margin:0 20px;background:var(--white);border-radius:var(--r-lg);box-shadow:var(--shadow-s);border:1px solid var(--border);overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:12px;padding:16px 16px;border-bottom:1px solid var(--border);cursor:pointer;">
+              <span style="font-size:22px;">📦</span>
+              <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">我发布的单</div><div style="font-size:11px;color:var(--sub);">共 2 条进行中</div></div>
+              <span style="color:var(--sub);">›</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:16px 16px;border-bottom:1px solid var(--border);cursor:pointer;">
+              <span style="font-size:22px;">🏆</span>
+              <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">我接的单</div><div style="font-size:11px;color:var(--sub);">6 单已完成，好评率 100%</div></div>
+              <span style="color:var(--sub);">›</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:16px 16px;cursor:pointer;">
+              <span style="font-size:22px;">📚</span>
+              <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">我的资料</div><div style="font-size:11px;color:var(--sub);">已上传 3 份资料</div></div>
+              <span style="color:var(--sub);">›</span>
+            </div>
+          </div>
+
+          <div class="section-hd"><span class="title">🛠️ 账号设置</span></div>
+          <div style="margin:0 20px;background:var(--white);border-radius:var(--r-lg);box-shadow:var(--shadow-s);border:1px solid var(--border);overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:12px;padding:16px 16px;border-bottom:1px solid var(--border);cursor:pointer;">
+              <span style="font-size:22px;">🔔</span>
+              <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">消息通知</div></div>
+              <span style="color:var(--sub);">›</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:16px 16px;cursor:pointer;">
+              <span style="font-size:22px;">🔒</span>
+              <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">隐私与安全</div></div>
+              <span style="color:var(--sub);">›</span>
+            </div>
+          </div>
+          <div style="height:20px;"></div>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab-item" onclick="switchTab('home')">
+            <div class="tab-icon">🏠</div>
+            <div class="tab-label">首页</div>
+          </div>
+          <div class="tab-item" onclick="switchTab('ai')">
+            <div class="tab-icon">🤖</div>
+            <div class="tab-label">AI 学习</div>
+          </div>
+          <div class="tab-item" onclick="switchTab('order')">
+            <div class="tab-icon">💼</div>
+            <div class="tab-label">接单</div>
+          </div>
+          <div class="tab-item active" onclick="switchTab('profile')">
+            <div class="tab-icon">👤</div>
+            <div class="tab-label">我的</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /app-root -->
+  </div><!-- /phone-screen -->
+</div><!-- /phone-shell -->
+
+<!-- ░░░░░ 外部说明区 ░░░░░ -->
+<div class="outer-wrap">
+  <div class="outer-title">青途校园 APP</div>
+  <div class="outer-sub">Q版马卡龙风格 · 高保真移动端原型<br>点击下方按钮切换页面预览</div>
+  <div class="preview-btns">
+    <div class="preview-btn active" id="ext-home" onclick="switchTab('home')">🏠 首页</div>
+    <div class="preview-btn" id="ext-ai"    onclick="switchTab('ai')">🤖 AI 学习</div>
+    <div class="preview-btn" id="ext-order" onclick="switchTab('order')">💼 接单广场</div>
+    <div class="preview-btn" id="ext-profile" onclick="switchTab('profile')">👤 我的</div>
+  </div>
+</div>
+
+<!-- 设计说明卡 -->
+<div class="info-card">
+  <h3>🎨 设计系统说明</h3>
+  <div class="info-row">
+    <div class="info-emoji">🍬</div>
+    <div class="info-text"><strong>马卡龙配色</strong>：薰衣草紫 #B5A9FF · 樱花粉 #FFB7C5 · 薄荷绿 #A8D8B9 · 奶油黄 #FFE0A3</div>
+  </div>
+  <div class="info-row">
+    <div class="info-emoji">✏️</div>
+    <div class="info-text"><strong>字体</strong>：Noto Sans SC · 标题 900 weight · 正文 14px 规范级</div>
+  </div>
+  <div class="info-row">
+    <div class="info-emoji">📐</div>
+    <div class="info-text"><strong>圆角</strong>：大卡片 24px · 中元素 16px · 小标签 12px · 全圆按钮 50px</div>
+  </div>
+  <div class="info-row">
+    <div class="info-emoji">🚀</div>
+    <div class="info-text"><strong>下一步</strong>：将此 HTML 上传至 Coze / Bolt.new，AI 可直接识别组件结构并生成对应功能代码</div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll("[onclick]").forEach(el=>{if(!el.matches("button,a,input,select,textarea")){el.setAttribute("role","button");el.setAttribute("tabindex","0")}});document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches("[role=button][tabindex]")){e.preventDefault();e.target.click()}});
+// ── 屏幕切换 ────────────────────────────
+const screenMap = {
+  home:    '#home-screen',
+  ai:      '#ai-screen',
+  order:   '#order-screen',
+  profile: '#profile-screen',
+};
+const extBtnMap = {
+  home:    '#ext-home',
+  ai:      '#ext-ai',
+  order:   '#ext-order',
+  profile: '#ext-profile',
+};
+
+function switchTab(name) {
+  // 隐藏全部
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  // 显示目标
+  const target = document.querySelector(screenMap[name]);
+  if (target) {
+    target.classList.add('active');
+    target.querySelector('.scroll-area')?.scrollTo(0, 0);
+  }
+  // 外部按钮高亮
+  document.querySelectorAll('.preview-btn').forEach(b => b.classList.remove('active'));
+  const extBtn = document.querySelector(extBtnMap[name]);
+  if (extBtn) extBtn.classList.add('active');
+}
+
+// ── 分类 tag 切换 ────────────────────────
+function setActiveTag(el) {
+  document.querySelectorAll('.cat-tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── 点击动效小彩蛋 ──────────────────────
+document.querySelectorAll('.btn-pill.btn-primary').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    const span = document.createElement('span');
+    span.textContent = '✨';
+    span.style.cssText = `
+      position:fixed; pointer-events:none; font-size:20px; z-index:9999;
+      left:${e.clientX - 12}px; top:${e.clientY - 12}px;
+      animation: popUp 0.6s ease-out forwards;
+    `;
+    document.body.appendChild(span);
+    setTimeout(() => span.remove(), 650);
+  });
+});
+
+// 弹出动画
+const styleTag = document.createElement('style');
+styleTag.textContent = `
+  @keyframes popUp {
+    0%   { opacity:1; transform: scale(0.5) translateY(0); }
+    60%  { opacity:1; transform: scale(1.4) translateY(-20px); }
+    100% { opacity:0; transform: scale(1) translateY(-40px); }
+  }
+`;
+document.head.appendChild(styleTag);
+</script>
+</body>
+</html>
